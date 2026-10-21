@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ t.nav_about }} — {{ t.site_name }}{% endblock %}
+
+{% block content %}
+<section class="about-section" id="aboutSection">
+    <h1>{{ t.about_title }}</h1>
+    <p class="about-lead">{{ t.about_lead }}</p>
+
+    <div class="about-block">
+        <h2>{{ t.about_mission_t }}</h2>
+        <p>{{ t.about_mission_b }}</p>
+    </div>
+
+    <div class="about-block">
+        <h2>{{ t.about_do_t }}</h2>
+        <ul>
+            <li>{{ t.about_do_1 }}</li>
+            <li>{{ t.about_do_2 }}</li>
+            <li>{{ t.about_do_3 }}</li>
+        </ul>
+    </div>
+
+    <div class="about-block">
+        <h2>{{ t.about_impact_t }}</h2>
+        <div class="about-values">
+            <div class="about-value">
+                <span class="about-stat">≈ 70 kg</span>
+                {{ t.stat_co2 }}
+            </div>
+            <div class="about-value">
+                <span class="about-stat">{{ cafe_count }}+</span>
+                {{ t.stat_count }}
+            </div>
+            <div class="about-value">
+                <span class="about-stat">{{ 'Kostenlos' if lang == 'de' else 'Free' }}</span>
+                {{ t.stat_free }}
+            </div>
+        </div>
+    </div>
+
+    <div class="about-block">
+        <h2>{{ t.about_who_t }}</h2>
+        <p>{{ t.about_who_b }}</p>
+    </div>
+</section>
+{% endblock %}

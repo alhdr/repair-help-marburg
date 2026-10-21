@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ t.nav_faqs }} — {{ t.site_name }}{% endblock %}
+
+{% block content %}
+<section class="faq-section" id="faqSection">
+    <h2>{{ t.faq_title }}</h2>
+
+    <div class="faq-container">
+        {% for f in faqs %}
+        <details class="faq-item">
+            <summary class="faq-question">
+                {{ f.question_de if (lang == 'de' and f.question_de) else f.question_en }}
+            </summary>
+            <div class="faq-answer">
+                <p>{{ f.answer_de if (lang == 'de' and f.answer_de) else f.answer_en }}</p>
+            </div>
+        </details>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

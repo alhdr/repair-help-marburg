@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% block title %}{{ t.a_title }} — {{ t.site_name }}{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+    <div class="content-header">
+        <h1>{{ t.a_title }}</h1>
+        <p>{{ t.a_intro }}</p>
+        <a class="admin-logout" href="{{ url_for('admin_logout') }}">{{ t.a_logout }}</a>
+    </div>
+
+    <div class="admin-sections">
+
+        <!-- 1. CONTACT EMAIL CONFIGURATION -->
+        <section class="admin-section" id="section-email">
+            <div class="admin-section-header">
+                <h3>{{ t.a_email_sec }}</h3>
+                <button type="button" class="btn-edit" onclick="toggleSection('email')">{{ t.a_edit }}</button>
+            </div>
+            <div class="admin-section-body" id="email-body" hidden>
+                <form method="post" action="{{ url_for('admin_settings') }}">
+                    <div class="form-group">
+                        <label for="contact_email">{{ t.a_email_label }}</label>
+                        <input type="email" id="contact_email" name="contact_email"
+                               value="{{ settings.contact_email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_phone">{{ t.a_phone_label }}</label>
+                        <input type="text" id="contact_phone" name="contact_phone"
+                               value="{{ settings.contact_phone }}">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">{{ t.a_save }}</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. FAQ MANAGEMENT -->
+        <section class="admin-section" id="section-faq">
+            <div class="admin-section-header">
+                <h3>{{ t.a_faq_sec }}</h3>
+                <button type="button" class="btn-edit" onclick="toggleSection('faq')">{{ t.a_edit }}</button>
+            </div>
+            <div class="admin-section-body" id="faq-body" hidden>
+                <ul class="admin-list">
+                    {% for f in faqs %}
+                    <li>
+                        <span>{{ f.question_en }}</span>
+                        <form method="post" action="{{ url_for('admin_faq_delete', faq_id=f.id) }}">
+                            <button type="submit" class="btn-danger">{{ t.a_remove }}</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="empty">—</li>
+                    {% endfor %}
+                </ul>
+
+                <form method="post" action="{{ url_for('admin_faq_add') }}" class="admin-add-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="question_en">{{ t.a_q_en }}</label>
+                            <input type="text" id="question_en" name="question_en" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="question_de">{{ t.a_q_de }}</label>
+                            <input type="text" id="question_de" name="question_de">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="answer_en">{{ t.a_a_en }}</label>
+                        <textarea id="answer_en" name="answer_en" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="answer_de">{{ t.a_a_de }}</label>
+                        <textarea id="answer_de" name="answer_de" rows="2"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">{{ t.a_add }}</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. CAFE MANAGEMENT -->
+        <section class="admin-section" id="section-cafes">
+            <div class="admin-section-header">
+                <h3>{{ t.a_cafe_sec }}</h3>
+                <button type="button" class="btn-edit" onclick="toggleSection('cafes')">{{ t.a_edit }}</button>
+            </div>
+            <div class="admin-section-body" id="cafes-body" hidden>
+                <ul class="admin-list">
+                    {% for c in cafes %}
+                    <li class="admin-cafe-row">
+                        <div class="admin-cafe-head">
+                            <span>{{ c.name }}
+                                <small>({{ c.services_en|join(', ') }})</small>
+                            </span>
+                            <div class="admin-cafe-actions">
+                                <button type="button" class="btn-edit" onclick="toggleCafeEdit({{ c.id }})">{{ t.a_edit }}</button>
+                                <form method="post" action="{{ url_for('admin_cafe_delete', cafe_id=c.id) }}">
+                                    <button type="submit" class="btn-danger">{{ t.a_remove }}</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="admin-cafe-edit" id="cafe-edit-{{ c.id }}" hidden>
+                            <form method="post" action="{{ url_for('admin_cafe_edit', cafe_id=c.id) }}">
+                                <div class="form-group">
+                                    <label>{{ t.a_cafe_name }}</label>
+                                    <input type="text" name="name" value="{{ c.name }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>{{ t.a_cafe_addr }}</label>
+                                    <input type="text" name="address" value="{{ c.address }}">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>{{ t.a_cafe_hours }}</label>
+                                        <input type="text" name="hours" value="{{ c.hours }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{{ t.a_cafe_price }}</label>
+                                        <input type="text" name="pricing" value="{{ c.pricing }}">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>{{ t.a_cafe_access }}</label>
+                                        <input type="text" name="accessibility" value="{{ c.accessibility }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{{ t.a_cafe_web }}</label>
+                                        <input type="url" name="website" value="{{ c.website }}">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>{{ t.a_cafe_lat }}</label>
+                                        <input type="text" name="lat" value="{{ c.lat if c.lat is not none else '' }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{{ t.a_cafe_lng }}</label>
+                                        <input type="text" name="lng" value="{{ c.lng if c.lng is not none else '' }}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>{{ t.a_cafe_notes }}</label>
+                                    <textarea name="notes" rows="2">{{ c.notes }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>{{ t.a_cafe_services }}</label>
+                                    <div class="checkbox-grid">
+                                        {% for s in services %}
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="services" value="{{ s.id }}"
+                                                   {{ 'checked' if s.slug in c.slugs else '' }}>
+                                            {{ s.icon }} {{ s.name_de if lang == 'de' else s.name_en }}
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">{{ t.a_save }}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="empty">—</li>
+                    {% endfor %}
+                </ul>
+
+                <form method="post" action="{{ url_for('admin_cafe_add') }}" class="admin-add-form">
+                    <div class="form-group">
+                        <label for="name">{{ t.a_cafe_name }}</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">{{ t.a_cafe_addr }}</label>
+                        <input type="text" id="address" name="address">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hours">{{ t.a_cafe_hours }}</label>
+                            <input type="text" id="hours" name="hours">
+                        </div>
+                        <div class="form-group">
+                            <label for="pricing">{{ t.a_cafe_price }}</label>
+                            <input type="text" id="pricing" name="pricing">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="accessibility">{{ t.a_cafe_access }}</label>
+                            <input type="text" id="accessibility" name="accessibility">
+                        </div>
+                        <div class="form-group">
+                            <label for="website">{{ t.a_cafe_web }}</label>
+                            <input type="url" id="website" name="website">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lat">{{ t.a_cafe_lat }}</label>
+                            <input type="text" id="lat" name="lat" placeholder="50.807">
+                        </div>
+                        <div class="form-group">
+                            <label for="lng">{{ t.a_cafe_lng }}</label>
+                            <input type="text" id="lng" name="lng" placeholder="8.770">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">{{ t.a_cafe_notes }}</label>
+                        <textarea id="notes" name="notes" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ t.a_cafe_services }}</label>
+                        <div class="checkbox-grid">
+                            {% for s in services %}
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="services" value="{{ s.id }}">
+                                {{ s.icon }} {{ s.name_de if lang == 'de' else s.name_en }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">{{ t.a_add }}</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleSection(key) {
+        const section = document.getElementById("section-" + key);
+        const body = document.getElementById(key + "-body");
+        const button = section.querySelector(".btn-edit");
+        const isOpen = !body.hidden;
+        body.hidden = isOpen;
+        section.classList.toggle("open", !isOpen);
+        button.textContent = isOpen ? {{ t.a_edit|tojson }} : {{ t.a_close|tojson }};
+    }
+
+    function toggleCafeEdit(id) {
+        const box = document.getElementById("cafe-edit-" + id);
+        if (box) box.hidden = !box.hidden;
+    }
+</script>
+{% endblock %}

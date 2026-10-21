@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ t.a_login_title }} — {{ t.site_name }}{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+    <div class="login-card">
+        <h1>{{ t.a_login_title }}</h1>
+        <form method="post" action="{{ url_for('admin') }}">
+            <div class="form-group">
+                <label for="password">{{ t.a_password }}</label>
+                <input type="password" id="password" name="password" required autofocus>
+            </div>
+            <button type="submit" class="btn-primary">{{ t.a_login }}</button>
+        </form>
+    </div>
+</main>
+{% endblock %}

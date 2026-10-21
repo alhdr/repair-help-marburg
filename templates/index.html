@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <h1>{{ t.hero_title }}</h1>
+    <p>{{ t.hero_sub }}</p>
+
+    <div class="search-box">
+        <input type="text" placeholder="{{ t.search_placeholder }}">
+        <button>{{ t.search_btn }}</button>
+    </div>
+</section>
+
+<section class="categories" id="categories">
+    <h2>{{ t.categories_title }}</h2>
+
+    <div class="category-slider">
+        <div class="category-track">
+            {% for s in featured %}
+            <div class="category-card {{ s.slug }}" data-service="{{ s.slug }}">
+                {{ s.icon }} {{ s.name_de if lang == 'de' else s.name_en }}
+            </div>
+            {% endfor %}
+            {# duplicated set for the seamless looping animation #}
+            {% for s in featured %}
+            <div class="category-card {{ s.slug }}" data-service="{{ s.slug }}">
+                {{ s.icon }} {{ s.name_de if lang == 'de' else s.name_en }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="co2-section">
+    <h2>{{ t.co2_title }}</h2>
+    <div class="co2-cards">
+        <div class="co2-card card-phone">
+            📱 {{ 'Handy' if lang == 'de' else 'Phone' }}<br>
+            <span class="impact-text"><strong>≈ 70 kg CO₂</strong></span>
+        </div>
+        <div class="co2-card card-laptop">
+            💻 Laptop<br>
+            <span class="impact-text"><strong>≈ 200 kg CO₂</strong></span>
+        </div>
+        <div class="co2-card card-bike">
+            🚲 {{ 'Fahrrad' if lang == 'de' else 'Bike' }}<br>
+            <span class="impact-text"><strong>≈ 50 kg CO₂</strong></span>
+        </div>
+    </div>
+</section>
+
+<section class="map-search-section" id="mapSection">
+    <h2>{{ t.map_title }}</h2>
+
+    <div class="map-search-container">
+        <div id="map"></div>
+
+        <div class="search-panel">
+            <input id="locationSearch" type="text" placeholder="{{ t.sidebar_search }}">
+
+
+            {# Default server-rendered list of ALL cafes (works without JS too) #}
+            <div id="cafeList">
+                {% for c in cafes %}
+                <div class="cafe-item"
+                     data-id="{{ c.id }}"
+                     data-name="{{ c.name|lower }}"
+                     data-slugs="{{ c.slugs|join(' ') }}"
+                     data-search="{{ (c.name ~ ' ' ~ c.services_en|join(' ') ~ ' ' ~ c.services_de|join(' '))|lower }}">
+                    {{ c.name }}
+                </div>
+                {% endfor %}
+            </div>
+
+            <p id="noResults" class="no-results" hidden>{{ t.no_results }}</p>
+            <div id="locationDetails"></div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.__DATA__ = {
+        lang: {{ lang|tojson }},
+        cafes: {{ cafes|tojson }},
+        strings: {
+            address: {{ t.d_address|tojson }},
+            hours: {{ t.d_hours|tojson }},
+            services: {{ t.d_services|tojson }},
+            pricing: {{ t.d_pricing|tojson }},
+            access: {{ t.d_access|tojson }},
+            notes: {{ t.d_notes|tojson }},
+            website: {{ t.d_website|tojson }},
+            visit: {{ t.d_visit|tojson }},
+            no_results: {{ t.no_results|tojson }}
+        }
+    };
+</script>
+{% endblock %}
